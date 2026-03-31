@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PES Sorteio</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    #roomBadge {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: #111118;
+      border-bottom: 1px solid #1e1e2e;
+      padding: 10px 20px;
+      z-index: 100;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+    .room-info { display: flex; align-items: center; gap: 10px; }
+    .room-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: #00e5ff; box-shadow: 0 0 6px #00e5ff;
+      animation: pulse 2s infinite; flex-shrink: 0;
+    }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+    .room-meta { display: flex; flex-direction: column; gap: 1px; }
+    .room-label { font-size: 10px; color: #555; letter-spacing: 1px; text-transform: uppercase; }
+    .room-id {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 16px; font-weight: 700; letter-spacing: 3px; color: #fff; text-transform: uppercase;
+    }
+    .room-actions { display: flex; gap: 8px; align-items: center; }
+    .btn-copy {
+      background: transparent; border: 1px solid #2a2a3a; color: #888;
+      padding: 5px 12px; border-radius: 6px; font-size: 11px;
+      font-family: 'Barlow', sans-serif; cursor: pointer;
+      letter-spacing: 1px; text-transform: uppercase; transition: all 0.2s; white-space: nowrap;
+    }
+    .btn-copy:hover { border-color: #00e5ff; color: #00e5ff; }
+    .btn-copy.copied { border-color: #10b981; color: #10b981; }
+    .btn-lobby-back {
+      background: transparent; border: 1px solid #2a2a3a; color: #555;
+      padding: 5px 12px; border-radius: 6px; font-size: 11px;
+      font-family: 'Barlow', sans-serif; cursor: pointer;
+      letter-spacing: 1px; text-transform: uppercase; transition: all 0.2s;
+      text-decoration: none; white-space: nowrap;
+    }
+    .btn-lobby-back:hover { border-color: #555; color: #aaa; }
+    #app { padding-top: 64px; }
+  </style>
+</head>
+<body>
+
+  <div id="roomBadge">
+    <div class="room-info">
+      <div class="room-dot"></div>
+      <div class="room-meta">
+        <div class="room-label">Sala ativa</div>
+        <div class="room-id" id="roomBadgeId">—</div>
+      </div>
+    </div>
+    <div class="room-actions">
+      <button class="btn-copy" id="copyBtn" onclick="copyRoomLink()">Copiar link</button>
+      <a class="btn-lobby-back" href="lobby.html">Sair</a>
+    </div>
+  </div>
+
+  <div id="app">
+    <div class="header">
+      <h1>PES <span>Sorteio</span></h1>
+      <p>Chaveamento de grupos</p>
+    </div>
+    <div class="panel">
+      <div class="section-title">Configuração</div>
+      <div class="config-row">
+        <div class="config-item">
+          <label>Nº de grupos</label>
+          <input type="number" id="numGroups" min="2" max="16" value="2">
+        </div>
+        <div class="config-item">
+          <label>Jogadores por grupo</label>
+          <input type="number" id="perGroup" min="2" max="12" value="4">
+        </div>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="section-title">Lista de participantes</div>
+      <div class="textarea-wrap">
+        <textarea id="nameList" placeholder="Cole ou digite um nome por linha:&#10;&#10;Kailon&#10;Henderson&#10;Filipe&#10;Andre&#10;Ivan&#10;Fabio&#10;Victor&#10;Samuel"></textarea>
+      </div>
+      <div class="name-count" id="nameCount">0 nomes</div>
+    </div>
+    <button class="btn-draw" id="drawBtn" onclick="draw()">Sortear Grupos</button>
+    <div class="error-msg" id="errorMsg"></div>
+    <div class="groups-container" id="groupsContainer">
+      <div class="groups-header">
+        <div class="groups-title">Chaves</div>
+        <button class="btn-reset" onclick="reset()">Novo sorteio</button>
+      </div>
+      <div class="groups-grid" id="groupsGrid"></div>
+    </div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+  <script src="script.js?v=2.1"></script>
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const roomId = params.get('id');
+
+    if (!roomId) {
+      window.location.href = 'lobby.html';
+    } else {
+      document.getElementById('roomBadgeId').textContent = roomId.toUpperCase();
+    }
+
+    function copyRoomLink() {
+      navigator.clipboard.writeText(window.location.href).then(() => {
+        const btn = document.getElementById('copyBtn');
+        btn.textContent = 'Copiado!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = 'Copiar link'; btn.classList.remove('copied'); }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

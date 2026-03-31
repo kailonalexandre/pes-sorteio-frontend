@@ -1,0 +1,160 @@
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+#app {
+  font-family: 'Barlow', sans-serif;
+  background: #0a0a0f;
+  min-height: 100vh;
+  padding: 24px 20px;
+  color: #e8e8f0;
+}
+
+/* ── HEADER ──────────────────────────────────────────────── */
+.header { text-align: center; margin-bottom: 24px; }
+.header h1 {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 32px; font-weight: 700;
+  letter-spacing: 3px; text-transform: uppercase; color: #fff;
+}
+.header h1 span { color: #00e5ff; }
+.header p { font-size: 12px; color: #555; margin-top: 4px; letter-spacing: 1.5px; text-transform: uppercase; }
+
+/* ── PAINÉIS ─────────────────────────────────────────────── */
+.panel {
+  background: #111118;
+  border: 1px solid #1e1e2e;
+  border-radius: 12px;
+  padding: 18px;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 12px; font-weight: 600;
+  letter-spacing: 2px; text-transform: uppercase;
+  color: #00e5ff; margin-bottom: 14px;
+}
+
+/* ── CONFIGURAÇÃO ────────────────────────────────────────── */
+.config-row { display: flex; gap: 12px; flex-wrap: wrap; }
+.config-item { flex: 1; min-width: 110px; }
+.config-item label {
+  display: block; font-size: 11px; color: #555;
+  letter-spacing: 1px; text-transform: uppercase; margin-bottom: 6px;
+}
+.config-item input[type="number"] {
+  width: 100%; background: #0a0a0f;
+  border: 1px solid #2a2a3a; border-radius: 8px;
+  padding: 9px 12px; color: #fff; font-size: 15px;
+  font-family: 'Barlow', sans-serif; outline: none; transition: border-color 0.2s;
+}
+.config-item input[type="number"]:focus { border-color: #00e5ff55; }
+
+/* ── TEXTAREA DE NOMES ───────────────────────────────────── */
+.textarea-wrap { position: relative; }
+textarea {
+  width: 100%; background: #0a0a0f;
+  border: 1px solid #1e1e2e; border-radius: 8px;
+  padding: 12px 14px; color: #fff; font-size: 14px;
+  font-family: 'Barlow', sans-serif; outline: none;
+  resize: vertical; min-height: 130px; line-height: 1.6;
+  transition: border-color 0.2s;
+}
+textarea:focus { border-color: #00e5ff33; }
+textarea::placeholder { color: #333; }
+.name-count { font-size: 12px; color: #555; text-align: right; margin-top: 6px; }
+.name-count span { color: #00e5ff; }
+
+/* ── BOTÕES ──────────────────────────────────────────────── */
+.btn-draw {
+  width: 100%; padding: 15px;
+  background: #00e5ff; color: #000; border: none; border-radius: 10px;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 17px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+  cursor: pointer; transition: all 0.2s; margin-bottom: 4px;
+}
+.btn-draw:hover { background: #33eaff; }
+.btn-draw:active { transform: scale(0.98); }
+.btn-draw:disabled { background: #1a1a2a; color: #444; cursor: not-allowed; }
+
+.btn-reset {
+  background: transparent;
+  border: 1px solid #2a2a3a; color: #777;
+  padding: 6px 14px; border-radius: 6px;
+  font-size: 11px; font-family: 'Barlow', sans-serif;
+  cursor: pointer; letter-spacing: 1px; text-transform: uppercase;
+  transition: all 0.2s;
+}
+.btn-reset:hover { border-color: #00e5ff; color: #00e5ff; }
+
+/* ── MENSAGEM DE ERRO ────────────────────────────────────── */
+.error-msg { color: #ff4466; font-size: 13px; margin-top: 10px; text-align: center; display: none; }
+
+/* ── CONTAINER DE GRUPOS ─────────────────────────────────── */
+.groups-container { display: none; margin-top: 8px; }
+.groups-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.groups-title {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 20px; font-weight: 700;
+  letter-spacing: 2px; color: #fff; text-transform: uppercase;
+}
+
+/* ── GRID DE CARDS ───────────────────────────────────────── */
+.groups-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+/* ── CARD DE GRUPO / CONFRONTO ───────────────────────────── */
+.group-card {
+  background: #111118;
+  border: 1px solid #1e1e2e;
+  border-radius: 12px;
+  overflow: hidden;
+  animation: fadeIn 0.4s ease forwards;
+  opacity: 0;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── CABEÇALHO DO CARD ───────────────────────────────────── */
+.group-header-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 14px; border-bottom: 1px solid #1a1a24;
+}
+.group-badge {
+  width: 30px; height: 30px; border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px; font-weight: 700; flex-shrink: 0;
+}
+.group-name-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 15px; font-weight: 600;
+  letter-spacing: 1.5px; text-transform: uppercase; color: #fff; flex: 1;
+}
+
+/* ── LISTA DE JOGADORES ──────────────────────────────────── */
+.group-players { padding: 6px 14px 12px; }
+.group-player {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 0; border-bottom: 1px solid #15151f;
+}
+.group-player:last-child { border-bottom: none; }
+
+.player-pos {
+  font-size: 11px; color: #444;
+  font-family: 'Barlow Condensed', sans-serif;
+  font-weight: 600; width: 14px; text-align: center; flex-shrink: 0;
+}
+.player-dot {
+  width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0;
+}
+.player-name {
+  font-size: 14px; color: #ccc; flex: 1;
+  min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}

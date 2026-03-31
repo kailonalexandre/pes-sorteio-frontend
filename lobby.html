@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PES Sorteio - Lobby</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #0a0a0f; color: #e8e8f0; }
+    .lobby { text-align: center; }
+    .lobby h1 { color: #00e5ff; }
+    .btn { background: #00e5ff; color: #000; border: none; padding: 10px 20px; margin: 10px; cursor: pointer; }
+    input { padding: 10px; margin: 10px; }
+  </style>
+</head>
+<body>
+  <div class="lobby">
+    <h1>PES Sorteio - Lobby</h1>
+    <p>Crie uma nova sala ou entre em uma existente.</p>
+    <button class="btn" onclick="createRoom()">Criar Sala</button>
+    <br>
+    <input type="text" id="roomId" placeholder="Código da sala" maxlength="10">
+    <button class="btn" onclick="joinRoom()">Entrar na Sala</button>
+    <div id="errorMsg"></div>
+  </div>
+
+  <script>
+    function createRoom() {
+      const id = Math.random().toString(36).substr(2, 9).toUpperCase();
+      window.location.href = `index.html?id=${id}&new=1`;
+    }
+
+    function joinRoom() {
+      const id = document.getElementById('roomId').value.trim().toUpperCase();
+      if (id) {
+        window.location.href = `index.html?id=${id}`;
+      } else {
+        document.getElementById('errorMsg').innerText = 'Digite um código válido.';
+      }
+    }
+
+    // Mostrar erro se houver
+    const error = sessionStorage.getItem('lobbyError');
+    if (error) {
+      document.getElementById('errorMsg').innerText = error;
+      sessionStorage.removeItem('lobbyError');
+    }
+  </script>
+</body>
+</html>
