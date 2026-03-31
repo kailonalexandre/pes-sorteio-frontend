@@ -7,21 +7,188 @@
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="style.css">
   <style>
-    body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #0a0a0f; color: #e8e8f0; }
-    .lobby { text-align: center; }
-    .lobby h1 { color: #00e5ff; }
-    .btn { background: #00e5ff; color: #000; border: none; padding: 10px 20px; margin: 10px; cursor: pointer; }
-    input { padding: 10px; margin: 10px; }
+    body { 
+      font-family: 'Barlow', sans-serif;
+      background: #0a0a0f;
+      min-height: 100vh;
+      padding: 24px 20px;
+      color: #e8e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0;
+    }
+
+    .lobby-container {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .header { 
+      text-align: center; 
+      margin-bottom: 32px; 
+    }
+
+    .header h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 32px; 
+      font-weight: 700;
+      letter-spacing: 3px; 
+      text-transform: uppercase; 
+      color: #fff;
+      margin: 0 0 4px 0;
+    }
+
+    .header h1 span { 
+      color: #00e5ff; 
+    }
+
+    .header p { 
+      font-size: 12px; 
+      color: #555; 
+      margin: 0;
+      letter-spacing: 1.5px; 
+      text-transform: uppercase; 
+    }
+
+    .panel {
+      background: #111118;
+      border: 1px solid #1e1e2e;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 12px; 
+      font-weight: 600;
+      letter-spacing: 2px; 
+      text-transform: uppercase;
+      color: #00e5ff; 
+      margin-bottom: 14px;
+    }
+
+    .input-group {
+      margin-bottom: 12px;
+    }
+
+    .input-group label {
+      display: block; 
+      font-size: 11px; 
+      color: #555;
+      letter-spacing: 1px; 
+      text-transform: uppercase; 
+      margin-bottom: 6px;
+    }
+
+    .input-group input {
+      width: 100%; 
+      background: #0a0a0f;
+      border: 1px solid #2a2a3a; 
+      border-radius: 8px;
+      padding: 9px 12px; 
+      color: #fff; 
+      font-size: 15px;
+      font-family: 'Barlow', sans-serif; 
+      outline: none; 
+      transition: border-color 0.2s;
+      box-sizing: border-box;
+    }
+
+    .input-group input:focus { 
+      border-color: #00e5ff55; 
+    }
+
+    .btn-create {
+      width: 100%; 
+      padding: 15px;
+      background: #00e5ff; 
+      color: #000; 
+      border: none; 
+      border-radius: 10px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px; 
+      font-weight: 700; 
+      letter-spacing: 3px; 
+      text-transform: uppercase;
+      cursor: pointer; 
+      transition: all 0.2s; 
+      margin-bottom: 12px;
+    }
+
+    .btn-create:hover { 
+      background: #33eaff; 
+    }
+
+    .btn-create:active { 
+      transform: scale(0.98); 
+    }
+
+    .btn-join {
+      width: 100%; 
+      padding: 15px;
+      background: transparent;
+      border: 1px solid #2a2a3a; 
+      color: #888;
+      border-radius: 10px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px; 
+      font-weight: 700; 
+      letter-spacing: 3px; 
+      text-transform: uppercase;
+      cursor: pointer; 
+      transition: all 0.2s;
+      margin-bottom: 12px;
+    }
+
+    .btn-join:hover { 
+      border-color: #00e5ff; 
+      color: #00e5ff; 
+    }
+
+    #errorMsg { 
+      color: #ff4466; 
+      font-size: 13px; 
+      text-align: center; 
+      display: none;
+      margin-top: 10px;
+    }
+
+    .divider {
+      text-align: center;
+      color: #555;
+      font-size: 12px;
+      margin: 16px 0;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
   </style>
 </head>
 <body>
-  <div class="lobby">
-    <h1>PES Sorteio - Lobby</h1>
-    <p>Crie uma nova sala ou entre em uma existente.</p>
-    <button class="btn" onclick="createRoom()">Criar Sala</button>
-    <br>
-    <input type="text" id="roomId" placeholder="Código da sala" maxlength="10">
-    <button class="btn" onclick="joinRoom()">Entrar na Sala</button>
+  <div class="lobby-container">
+    <div class="header">
+      <h1>PES <span>Sorteio</span></h1>
+      <p>Gerenciador de Salas</p>
+    </div>
+
+    <div class="panel">
+      <div class="section-title">Criar Nova Sala</div>
+      <p style="color: #888; font-size: 13px; margin: 0 0 12px 0;">Um novo código será gerado automaticamente.</p>
+      <button class="btn-create" onclick="createRoom()">Criar Sala</button>
+    </div>
+
+    <div class="divider">— OU —</div>
+
+    <div class="panel">
+      <div class="section-title">Entrar em Uma Sala</div>
+      <div class="input-group">
+        <label>Código da Sala</label>
+        <input type="text" id="roomId" placeholder="Digite o código" maxlength="10">
+      </div>
+      <button class="btn-join" onclick="joinRoom()">Entrar na Sala</button>
+    </div>
+
     <div id="errorMsg"></div>
   </div>
 
@@ -32,20 +199,36 @@
     }
 
     function joinRoom() {
+      const errEl = document.getElementById('errorMsg');
       const id = document.getElementById('roomId').value.trim().toUpperCase();
-      if (id) {
-        window.location.href = `index.html?id=${id}`;
-      } else {
-        document.getElementById('errorMsg').innerText = 'Digite um código válido.';
+      
+      if (!id) {
+        errEl.textContent = 'Digite um código válido.';
+        errEl.style.display = 'block';
+        return;
       }
+      
+      if (id.length < 3) {
+        errEl.textContent = 'Código deve ter pelo menos 3 caracteres.';
+        errEl.style.display = 'block';
+        return;
+      }
+      
+      window.location.href = `index.html?id=${id}`;
     }
 
     // Mostrar erro se houver
     const error = sessionStorage.getItem('lobbyError');
     if (error) {
-      document.getElementById('errorMsg').innerText = error;
+      document.getElementById('errorMsg').textContent = error;
+      document.getElementById('errorMsg').style.display = 'block';
       sessionStorage.removeItem('lobbyError');
     }
+
+    // Allow Enter key to join
+    document.getElementById('roomId').addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') joinRoom();
+    });
   </script>
 </body>
 </html>
