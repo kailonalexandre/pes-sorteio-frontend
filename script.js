@@ -93,7 +93,15 @@ function startPolling() {
   
   pollInterval = setInterval(async () => {
     try {
-      const response = await fetch(`${BACKEND_URL}/api/tournament/${TOURNAMENT_ID}`);
+      const response = await fetch(`${BACKEND_URL}/api/tournament/${TOURNAMENT_ID}`, {
+                method: 'GET',
+                headers: { 'Content-Type': 'application/json' }
+              });
+
+              if (!response.ok) {
+                console.warn('⚠️ Backend respondeu com erro:', response.status);
+                return;
+              }
       if (response.ok) {
         const state = await response.json();
         if (state) {
@@ -112,7 +120,12 @@ function startPolling() {
 }
 
 // Iniciar Socket.io ao carregar
-initSocket();
+document.addEventListener('DOMContentLoaded', () => {
+  console.log('📄 DOM carregado');
+
+  initSocket();
+  updateNameCount();
+});
 
 // ─── CONSTANTES DE COR ───────────────────────────────────────
 
@@ -140,8 +153,13 @@ let matchData = [];
 
 /** Lê nomes do textarea */
 function getNames() {
-  return document.getElementById('nameList').value
-    .split('\n').map(n => n.trim()).filter(n => n.length > 0);
+  const el = document.getElementById('nameList');
+  if (!el) return [];
+  
+  return el.value
+    .split('\n')
+    .map(n => n.trim())
+    .filter(n => n.length > 0);
 }
 
 /** Criação de elementos com atributos e filhos */
@@ -176,18 +194,33 @@ function getRoundLabel(stage, round, matchesSameRound) {
 
 // ─── LISTENER: contador de nomes ─────────────────────────────
 
-['nameList', 'numGroups', 'perGroup'].forEach(id =>
-  document.getElementById(id).addEventListener('input', updateNameCount)
-);
+function safeAddListener(id, event, callback) {
+  const el = document.getElementById(id);
+  if (!el) {
+    console.warn(`⚠️ Elemento não encontrado: ${id}`);
+    return;
+  }
+  el.addEventListener(event, callback);
+}
+
+['nameList', 'numGroups', 'perGroup'].forEach(id => {
+  safeAddListener(id, 'input', updateNameCount);
+});
 
 function updateNameCount() {
+  const nameListEl = document.getElementById('nameList');
+  const numGroupsEl = document.getElementById('numGroups');
+  const nameCountEl = document.getElementById('nameCount');
+
+  if (!nameListEl || !numGroupsEl || !nameCountEl) return;
+
   const n = getNames().length;
-  const g = parseInt(document.getElementById('numGroups').value) || 2;
-  // Agora exibe apenas o total e a média aproximada
-  document.getElementById('nameCount').innerHTML = 
+  const g = parseInt(numGroupsEl.value) || 2;
+
+  nameCountEl.innerHTML =
     `<span>${n}</span> jogadores para <span>${g}</span> grupos (Média: ~${(n/g).toFixed(1)})`;
 }
-updateNameCount();
+
 
 // ─── SOCKET: RECEBE ESTADO ATUALIZADO DO SERVIDOR ────────────
 // Este é o único ponto onde o front atualiza a tela.
