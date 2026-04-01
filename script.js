@@ -577,8 +577,11 @@ function buildMatchCard(match, col) {
     });
   });
 
-  card.appendChild(btn);
-}
+    card.appendChild(btn);
+  }
+  return card;
+} 
+
 // ─── RENDER: CAMPEÃO ─────────────────────────────────────────
 
 function checkAndRenderChampion(stage, color, title, sectionId) {
