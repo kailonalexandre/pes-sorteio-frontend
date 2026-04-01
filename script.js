@@ -183,9 +183,9 @@ function getRoundLabel(stage, round, matchesSameRound) {
 function updateNameCount() {
   const n = getNames().length;
   const g = parseInt(document.getElementById('numGroups').value) || 2;
-  const p = parseInt(document.getElementById('perGroup').value)  || 4;
-  document.getElementById('nameCount').innerHTML =
-    `<span>${n}</span> de ${g * p} nomes (${g} grupos × ${p})`;
+  // Agora exibe apenas o total e a média aproximada
+  document.getElementById('nameCount').innerHTML = 
+    `<span>${n}</span> jogadores para <span>${g}</span> grupos (Média: ~${(n/g).toFixed(1)})`;
 }
 updateNameCount();
 
@@ -240,25 +240,20 @@ function onStateUpdated(state) {
 // ─── DRAW: emite sorteio para o servidor ─────────────────────
 
 function draw() {
-  const err   = document.getElementById('errorMsg');
+  const err = document.getElementById('errorMsg');
   err.style.display = 'none';
 
   const names = getNames();
   const g = parseInt(document.getElementById('numGroups').value) || 2;
-  const p = parseInt(document.getElementById('perGroup').value)  || 4;
-  const total = g * p;
 
-  if (names.length < total) {
-    err.textContent  = `São necessários ${total} nomes (${g} × ${p}). Você tem ${names.length}.`;
+  if (names.length < g) {
+    err.textContent = `É necessário pelo menos ${g} jogadores para preencher os grupos.`;
     err.style.display = 'block';
     return;
   }
-  if (names.length > total) {
-    err.textContent  = `Você tem ${names.length} nomes mas só cabem ${total}. Os excedentes serão ignorados.`;
-    err.style.display = 'block';
-  }
 
-  socket.emit('drawTournament', { tournamentId: TOURNAMENT_ID, names, g, p });
+  // Envia apenas o tournamentId, a lista de nomes e a quantidade de grupos
+  socket.emit('drawTournament', { tournamentId: TOURNAMENT_ID, names, g });
 }
 
 // ─── RENDER: GRUPOS ──────────────────────────────────────────
