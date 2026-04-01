@@ -524,63 +524,61 @@ function buildMatchCard(match, col) {
 
   // ── Botão confirmar / status ──────────────────────────────
   if (!isFinished) {
-    const hasPen = isDraw && match.stage !== 'group';
-    const btnLabel = hasPen ? 'Confirmar Pênaltis' : 'Confirmar Placar';
+  const hasPen = isDraw && match.stage !== 'group';
+  const btnLabel = hasPen ? 'Confirmar Pênaltis' : 'Confirmar Placar';
 
-    const btn = el('button', {
-      class: 'btn-reset',
-      style: `width:100%; padding:8px; border-color:${col.border}; color:${col.badge}; margin-top:4px;`,
-      onclick: () => {
-        const v1 = parseInt(g1Input.value);
-        const v2 = parseInt(g2Input.value);
+  const btn = document.createElement('button');
+  btn.className = 'btn-reset';
+  btn.style = `width:100%; padding:8px; border-color:${col.border}; color:${col.badge}; margin-top:4px;`;
+  btn.textContent = btnLabel;
 
-        if (isNaN(v1) || isNaN(v2)) {
-          alert('Preencha os dois campos de gols!');
-          return;
-        }
+  btn.addEventListener('click', () => {
+    if (!window.socket) {
+      console.error('Socket não está definido!');
+      alert('Erro: conexão com servidor não estabelecida.');
+      return;
+    }
+    if (typeof TOURNAMENT_ID === 'undefined') {
+      console.error('TOURNAMENT_ID não definido!');
+      alert('Erro: ID do torneio não definido.');
+      return;
+    }
 
-        let p1 = null, p2 = null;
-        if (hasPen) {
-          p1 = parseInt(pen1Input.value);
-          p2 = parseInt(pen2Input.value);
-          if (isNaN(p1) || isNaN(p2)) {
-            alert('Preencha os pênaltis!');
-            return;
-          }
-          if (p1 === p2) {
-            alert('Pênaltis não podem terminar empatados!');
-            return;
-          }
-        }
+    const v1 = parseInt(g1Input.value);
+    const v2 = parseInt(g2Input.value);
 
-        socket.emit('updateMatchScore', {
-          tournamentId: TOURNAMENT_ID,
-          matchId: match.id,
-          goals1: v1,
-          goals2: v2,
-          pen1: p1,
-          pen2: p2,
-        });
+    if (isNaN(v1) || isNaN(v2)) {
+      alert('Preencha os dois campos de gols!');
+      return;
+    }
+
+    let p1 = null, p2 = null;
+    if (hasPen) {
+      p1 = parseInt(pen1Input.value);
+      p2 = parseInt(pen2Input.value);
+      if (isNaN(p1) || isNaN(p2)) {
+        alert('Preencha os pênaltis!');
+        return;
       }
-    }, [btnLabel]);
+      if (p1 === p2) {
+        alert('Pênaltis não podem terminar empatados!');
+        return;
+      }
+    }
 
-    card.appendChild(btn);
+    // Envia placar ao servidor
+    window.socket.emit('updateMatchScore', {
+      tournamentId: TOURNAMENT_ID,
+      matchId: match.id,
+      goals1: v1,
+      goals2: v2,
+      pen1: p1,
+      pen2: p2,
+    });
+  });
 
-  } else {
-    // Status final
-    let statusText;
-    if (isBye)                          statusText = `${match.player1} avança (BYE)`;
-    else if (match.stage === 'group' && match.draw) statusText = 'Empate';
-    else                                statusText = `Vencedor: ${match.winner}`;
-
-    card.appendChild(el('div', {
-      style: `text-align:center; font-size:12px; color:${col.badge}; font-weight:bold; margin-top:4px;`
-    }, [statusText]));
-  }
-
-  return card;
+  card.appendChild(btn);
 }
-
 // ─── RENDER: CAMPEÃO ─────────────────────────────────────────
 
 function checkAndRenderChampion(stage, color, title, sectionId) {
