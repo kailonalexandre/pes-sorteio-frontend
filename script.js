@@ -436,6 +436,7 @@ function renderMatchSection(matches, sectionId, title, accentColor = null) {
   }
 }
 
+
 // ─── RENDER: CARD DE CONFRONTO ────────────────────────────────
 
 function buildMatchCard(match, col) {
