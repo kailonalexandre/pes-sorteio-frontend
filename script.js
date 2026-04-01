@@ -203,7 +203,7 @@ function safeAddListener(id, event, callback) {
   el.addEventListener(event, callback);
 }
 
-['nameList', 'numGroups', 'perGroup'].forEach(id => {
+['nameList', 'numGroups'].forEach(id => {
   safeAddListener(id, 'input', updateNameCount);
 });
 
