@@ -237,8 +237,21 @@ function updateNameCount() {
 // Este é o único ponto onde o front atualiza a tela.
 
 function onStateUpdated(state) {
-  groupData = state.groupData;
-  matchData = state.matchData;
+  groupData = state.groupData || [];
+  matchData = state.matchData || [];
+
+  const drawBtn = document.getElementById('drawBtn');
+  const leagueSelector = document.getElementById('leagueSelector');
+  const resetBtn = document.querySelector('.groups-header .btn-reset');
+  if (state.isDrawn) {
+    if (drawBtn) drawBtn.style.display = 'none';
+    if (leagueSelector) leagueSelector.style.display = 'none';
+    if (resetBtn) resetBtn.style.display = 'none';
+  } else {
+    if (drawBtn) drawBtn.style.display = 'block';
+    if (leagueSelector) leagueSelector.style.display = 'flex';
+    if (resetBtn) resetBtn.style.display = 'inline-block';
+  }
 
   if (groupData.length === 0) return;
 
