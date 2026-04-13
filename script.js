@@ -8,9 +8,10 @@
 console.log('✅✅✅ SCRIPT.JS CARREGADO COM SUCESSO - v2.1 ✅✅✅');
 // Ambiente: local vs produção
 const BACKEND_URL = 'https://pes-backend-production.up.railway.app';
+//const BACKEND_URL = 'http://localhost:3000';
 const _params = new URLSearchParams(window.location.search);
 const TOURNAMENT_ID = _params.get('id') || null;
-const IS_NEW_ROOM   = _params.get('new') === '1';
+const IS_NEW_ROOM = _params.get('new') === '1';
 
 if (!TOURNAMENT_ID) {
   window.location.href = 'lobby.html';
@@ -25,7 +26,7 @@ let lastStateHash = null;
 function initSocket() {
   console.log('🔧 Inicializando Socket.io...');
   console.log('🔌 Backend URL:', BACKEND_URL);
-  
+
   socket = io(BACKEND_URL, {
     reconnection: true,
     reconnectionDelay: 1000,
@@ -88,20 +89,20 @@ function joinRoom() {
 
 function startPolling() {
   console.log('📊 Iniciando polling a cada 2 segundos...');
-  
+
   if (pollInterval) clearInterval(pollInterval);
-  
+
   pollInterval = setInterval(async () => {
     try {
       const response = await fetch(`${BACKEND_URL}/api/tournament/${TOURNAMENT_ID}`, {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json' }
-              });
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
+      });
 
-              if (!response.ok) {
-                console.warn('⚠️ Backend respondeu com erro:', response.status);
-                return;
-              }
+      if (!response.ok) {
+        console.warn('⚠️ Backend respondeu com erro:', response.status);
+        return;
+      }
       if (response.ok) {
         const state = await response.json();
         if (state) {
@@ -130,18 +131,18 @@ document.addEventListener('DOMContentLoaded', () => {
 // ─── CONSTANTES DE COR ───────────────────────────────────────
 
 const COLORS = [
-  { badge:'#00e5ff', badgeText:'#000', dot:'#00e5ff', border:'#00e5ff44', bg:'#00e5ff11' },
-  { badge:'#ff0066', badgeText:'#fff', dot:'#ff0066', border:'#ff006644', bg:'#ff006611' },
-  { badge:'#7c3aed', badgeText:'#fff', dot:'#7c3aed', border:'#7c3aed44', bg:'#7c3aed11' },
-  { badge:'#f59e0b', badgeText:'#000', dot:'#f59e0b', border:'#f59e0b44', bg:'#f59e0b11' },
-  { badge:'#10b981', badgeText:'#000', dot:'#10b981', border:'#10b98144', bg:'#10b98111' },
-  { badge:'#ef4444', badgeText:'#fff', dot:'#ef4444', border:'#ef444444', bg:'#ef444411' },
-  { badge:'#3b82f6', badgeText:'#fff', dot:'#3b82f6', border:'#3b82f644', bg:'#3b82f611' },
-  { badge:'#ec4899', badgeText:'#fff', dot:'#ec4899', border:'#ec489944', bg:'#ec489911' },
-  { badge:'#14b8a6', badgeText:'#000', dot:'#14b8a6', border:'#14b8a644', bg:'#14b8a611' },
-  { badge:'#f97316', badgeText:'#000', dot:'#f97316', border:'#f9731644', bg:'#f9731611' },
-  { badge:'#a855f7', badgeText:'#fff', dot:'#a855f7', border:'#a855f744', bg:'#a855f711' },
-  { badge:'#84cc16', badgeText:'#000', dot:'#84cc16', border:'#84cc1644', bg:'#84cc1611' },
+  { badge: '#00e5ff', badgeText: '#000', dot: '#00e5ff', border: '#00e5ff44', bg: '#00e5ff11' },
+  { badge: '#ff0066', badgeText: '#fff', dot: '#ff0066', border: '#ff006644', bg: '#ff006611' },
+  { badge: '#7c3aed', badgeText: '#fff', dot: '#7c3aed', border: '#7c3aed44', bg: '#7c3aed11' },
+  { badge: '#f59e0b', badgeText: '#000', dot: '#f59e0b', border: '#f59e0b44', bg: '#f59e0b11' },
+  { badge: '#10b981', badgeText: '#000', dot: '#10b981', border: '#10b98144', bg: '#10b98111' },
+  { badge: '#ef4444', badgeText: '#fff', dot: '#ef4444', border: '#ef444444', bg: '#ef444411' },
+  { badge: '#3b82f6', badgeText: '#fff', dot: '#3b82f6', border: '#3b82f644', bg: '#3b82f611' },
+  { badge: '#ec4899', badgeText: '#fff', dot: '#ec4899', border: '#ec489944', bg: '#ec489911' },
+  { badge: '#14b8a6', badgeText: '#000', dot: '#14b8a6', border: '#14b8a644', bg: '#14b8a611' },
+  { badge: '#f97316', badgeText: '#000', dot: '#f97316', border: '#f9731644', bg: '#f9731611' },
+  { badge: '#a855f7', badgeText: '#fff', dot: '#a855f7', border: '#a855f744', bg: '#a855f711' },
+  { badge: '#84cc16', badgeText: '#000', dot: '#84cc16', border: '#84cc1644', bg: '#84cc1611' },
 ];
 
 // ─── ESTADO LOCAL (read-only espelho do servidor) ─────────────
@@ -155,21 +156,31 @@ let matchData = [];
 function getNames() {
   const el = document.getElementById('nameList');
   if (!el) return [];
-  
+
   return el.value
     .split('\n')
     .map(n => n.trim())
     .filter(n => n.length > 0);
 }
 
+function getSelectedLeagues() {
+  return Array.from(document.querySelectorAll('.league-checkbox:checked')).map(cb => cb.value);
+}
+
+
+
+function clearLeagues() {
+  document.querySelectorAll('.league-checkbox').forEach(cb => cb.checked = false);
+}
+
 /** Criação de elementos com atributos e filhos */
 function el(tag, attrs = {}, children = []) {
   const e = document.createElement(tag);
   Object.entries(attrs).forEach(([k, v]) => {
-    if (k === 'style')                         e.style.cssText = v;
-    else if (k === 'class')                    e.className = v;
+    if (k === 'style') e.style.cssText = v;
+    else if (k === 'class') e.className = v;
     else if (k.startsWith('on') && typeof v === 'function') e.addEventListener(k.slice(2), v);
-    else                                       e.setAttribute(k, v);
+    else e.setAttribute(k, v);
   });
   children.forEach(c =>
     e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c)
@@ -181,12 +192,12 @@ function el(tag, attrs = {}, children = []) {
 function getRoundLabel(stage, round, matchesSameRound) {
   const count = matchesSameRound * 2; // aprox. de jogadores
   if (stage === 'final') {
-    if (count >= 8)  return `Quartas de Final`;
-    if (count >= 4)  return `Semifinal`;
+    if (count >= 8) return `Quartas de Final`;
+    if (count >= 4) return `Semifinal`;
     if (count === 2) return `Final`;
   }
   if (stage === 'repechage') {
-    if (count >= 4)  return `Semifinal da Repescagem`;
+    if (count >= 4) return `Semifinal da Repescagem`;
     if (count === 2) return `Final da Repescagem`;
   }
   return `Rodada ${round}`;
@@ -218,7 +229,7 @@ function updateNameCount() {
   const g = parseInt(numGroupsEl.value) || 2;
 
   nameCountEl.innerHTML =
-    `<span>${n}</span> jogadores para <span>${g}</span> grupos (Média: ~${(n/g).toFixed(1)})`;
+    `<span>${n}</span> jogadores para <span>${g}</span> grupos (Média: ~${(n / g).toFixed(1)})`;
 }
 
 
@@ -266,8 +277,8 @@ function onStateUpdated(state) {
   });
 
   // Campeões (quando chave tem só 1 vencedor)
-  checkAndRenderChampion('final',     '#00e5ff', '🏆 Campeão da Chave Principal', 'championFinalSection');
-  checkAndRenderChampion('repechage', '#f59e0b', '🏅 Campeão da Repescagem',      'championRepSection');
+  checkAndRenderChampion('final', '#00e5ff', '🏆 Campeão da Chave Principal', 'championFinalSection');
+  checkAndRenderChampion('repechage', '#f59e0b', '🏅 Campeão da Repescagem', 'championRepSection');
 }
 
 // ─── DRAW: emite sorteio para o servidor ─────────────────────
@@ -278,6 +289,7 @@ function draw() {
 
   const names = getNames();
   const g = parseInt(document.getElementById('numGroups').value) || 2;
+  const leaguesSelected = getSelectedLeagues();
 
   if (names.length < g) {
     err.textContent = `É necessário pelo menos ${g} jogadores para preencher os grupos.`;
@@ -286,7 +298,7 @@ function draw() {
   }
 
   // Envia apenas o tournamentId, a lista de nomes e a quantidade de grupos
-  socket.emit('drawTournament', { tournamentId: TOURNAMENT_ID, names, g });
+  socket.emit('drawTournament', { tournamentId: TOURNAMENT_ID, names, g, leaguesSelected });
 }
 
 // ─── RENDER: GRUPOS ──────────────────────────────────────────
@@ -296,7 +308,7 @@ function renderGroups() {
   grid.innerHTML = '';
 
   groupData.forEach((group, gi) => {
-    const col  = COLORS[gi % COLORS.length];
+    const col = COLORS[gi % COLORS.length];
     const card = el('div', {
       class: 'group-card',
       style: `animation-delay:${gi * 70}ms; border-color:${col.border};`
@@ -312,7 +324,8 @@ function renderGroups() {
       const row = el('div', { class: 'group-player' });
       row.appendChild(el('div', { class: 'player-pos' }, [String(idx + 1)]));
       row.appendChild(el('div', { class: 'player-dot', style: `background:${col.dot}` }));
-      row.appendChild(el('div', { class: 'player-name' }, [player.name]));
+      const txt = player.team ? `${player.name} - ${player.team}` : player.name;
+      row.appendChild(el('div', { class: 'player-name' }, [txt]));
       playerList.appendChild(row);
     });
 
@@ -326,19 +339,25 @@ function renderGroups() {
 function renderStandings() {
   let section = document.getElementById('standingsSection');
   if (!section) {
-    section = el('div', { id: 'standingsSection', style: 'margin-top: 30px;' });
-    document.getElementById('groupsContainer').after(section);
+    section = el('div', { id: 'standingsSection' });
+    const wrapper = document.getElementById('standingsWrapper');
+    if (wrapper) {
+      wrapper.appendChild(section);
+    } else {
+      section.style.marginTop = '30px';
+      document.getElementById('groupsContainer').after(section);
+    }
   }
   section.innerHTML = '';
 
   section.appendChild(
-    el('div', { class: 'groups-title', style: 'margin-bottom: 16px;' }, ['Classificação'])
+    el('div', { class: 'groups-title', style: 'font-size: 14px; color: #888; margin-bottom: 12px;' }, ['Classificação'])
   );
 
   const grid = el('div', { class: 'groups-grid' });
 
   groupData.forEach((group, gi) => {
-    const col  = COLORS[gi % COLORS.length];
+    const col = COLORS[gi % COLORS.length];
     const card = el('div', {
       class: 'group-card',
       style: `border-color:${col.border}; padding: 0; overflow: hidden;`
@@ -358,7 +377,7 @@ function renderStandings() {
 
     // Cabeçalho da tabela
     const th = el('div', { style: 'display:flex; font-size:11px; color:#888; font-weight:bold; margin-bottom:8px;' });
-    ['Jogador','Pts','SG','GP','GC'].forEach((label, i) =>
+    ['Jogador', 'Pts', 'SG', 'GP', 'GC'].forEach((label, i) =>
       th.appendChild(el('div', { style: `flex:${i === 0 ? 4 : 1}; text-align:${i === 0 ? 'left' : 'center'};` }, [label]))
     );
     table.appendChild(th);
@@ -366,7 +385,7 @@ function renderStandings() {
     // Linhas
     const half = Math.ceil(group.players.length / 2);
     group.players.forEach((p, rank) => {
-      const isQ   = rank < half;
+      const isQ = rank < half;
       const color = isQ ? '#fff' : '#888';
 
       const tr = el('div', {
@@ -423,7 +442,7 @@ function renderMatchSection(matches, sectionId, title, accentColor = null) {
   const grid = el('div', { class: 'groups-grid' });
 
   matches.forEach(match => {
-    const col  = COLORS[match.groupIndex % COLORS.length];
+    const col = COLORS[match.groupIndex % COLORS.length];
     grid.appendChild(buildMatchCard(match, col));
   });
 
@@ -440,9 +459,9 @@ function renderMatchSection(matches, sectionId, title, accentColor = null) {
 // ─── RENDER: CARD DE CONFRONTO ────────────────────────────────
 
 function buildMatchCard(match, col) {
-  const isBye      = match.player2 === 'BYE';
+  const isBye = match.player2 === 'BYE';
   const isFinished = match.isFinished;
-  const isDraw     = match.draw && !isFinished; // empate aguardando pênaltis
+  const isDraw = match.draw && !isFinished; // empate aguardando pênaltis
 
   const card = el('div', {
     class: 'group-card',
@@ -570,13 +589,56 @@ function buildMatchCard(match, col) {
   } else {
     // Status final
     let statusText;
-    if (isBye)                          statusText = `${match.player1} avança (BYE)`;
+    if (isBye) statusText = `${match.player1} avança (BYE)`;
     else if (match.stage === 'group' && match.draw) statusText = 'Empate';
-    else                                statusText = `Vencedor: ${match.winner}`;
+    else statusText = `Vencedor: ${match.winner}`;
 
-    card.appendChild(el('div', {
-      style: `text-align:center; font-size:12px; color:${col.badge}; font-weight:bold; margin-top:4px;`
+    const statusRow = el('div', { style: 'display: flex; justify-content: space-between; align-items: center; margin-top: 4px;' });
+
+    // Status label
+    statusRow.appendChild(el('div', {
+      style: `font-size:12px; color:${col.badge}; font-weight:bold; flex: 1; text-align: center;`
     }, [statusText]));
+
+    // Botão de editar (se não for bye)
+    if (!isBye) {
+      const editBtn = el('button', {
+        class: 'btn-reset',
+        style: `font-size: 10px; padding: 3px 8px; border-color:#333; color:#888; border-radius: 4px;`,
+        onclick: () => {
+          // Destroi status atual e abre modo de edição
+          statusRow.style.display = 'none';
+          g1Input.disabled = false;
+          g2Input.disabled = false;
+          g1Input.style.borderColor = '#555';
+          g2Input.style.borderColor = '#555';
+
+
+          const saveBtn = el('button', {
+            class: 'btn-reset',
+            style: `width:100%; padding:8px; border-color:${col.badge}; color:${col.badge}; margin-top:8px;`,
+            onclick: () => {
+              const v1 = parseInt(g1Input.value);
+              const v2 = parseInt(g2Input.value);
+              if (isNaN(v1) || isNaN(v2)) return;
+
+              socket.emit('updateMatchScore', {
+                tournamentId: TOURNAMENT_ID,
+                matchId: match.id,
+                goals1: v1,
+                goals2: v2,
+                pen1: match.pen1,
+                pen2: match.pen2,
+              });
+            }
+          }, ['Salvar Correção']);
+          card.appendChild(saveBtn);
+        }
+      }, ['Editar']);
+      statusRow.appendChild(editBtn);
+    }
+
+    card.appendChild(statusRow);
   }
 
   return card;
@@ -631,6 +693,7 @@ function reset() {
 
   document.getElementById('groupsContainer').style.display = 'none';
   document.getElementById('errorMsg').style.display = 'none';
+  clearLeagues();
 
   // Remove todas as seções dinâmicas
   [
