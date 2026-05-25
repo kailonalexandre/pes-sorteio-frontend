@@ -170,6 +170,11 @@ function getSelectedLeagues() {
   return Array.from(document.querySelectorAll('.league-checkbox:checked')).map(cb => cb.value);
 }
 
+function getUseRepechage() {
+  const el = document.getElementById('useRepechage');
+  return Boolean(el && el.checked);
+}
+
 function isVictoryScoring() {
   return scoringMode === 'victory';
 }
@@ -250,7 +255,12 @@ function onStateUpdated(state) {
 
   const drawBtn = document.getElementById('drawBtn');
   const leagueSelector = document.getElementById('leagueSelector');
+  const useRepechageEl = document.getElementById('useRepechage');
   const resetBtn = document.querySelector('.groups-header .btn-reset');
+  if (useRepechageEl) {
+    useRepechageEl.checked = Boolean(state.useRepechage);
+    useRepechageEl.disabled = Boolean(state.isDrawn);
+  }
   if (state.isDrawn) {
     if (drawBtn) drawBtn.style.display = 'none';
     if (leagueSelector) leagueSelector.style.display = 'none';
@@ -311,6 +321,7 @@ function draw() {
   const names = getNames();
   const g = parseInt(document.getElementById('numGroups').value) || 2;
   const leaguesSelected = getSelectedLeagues();
+  const useRepechage = getUseRepechage();
 
   if (names.length < g) {
     err.textContent = `É necessário pelo menos ${g} jogadores para preencher os grupos.`;
@@ -319,7 +330,7 @@ function draw() {
   }
 
   // Envia apenas o tournamentId, a lista de nomes e a quantidade de grupos
-  socket.emit('drawTournament', { tournamentId: TOURNAMENT_ID, names, g, leaguesSelected });
+  socket.emit('drawTournament', { tournamentId: TOURNAMENT_ID, names, g, leaguesSelected, useRepechage });
 }
 
 // ─── RENDER: GRUPOS ──────────────────────────────────────────

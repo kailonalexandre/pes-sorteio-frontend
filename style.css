@@ -50,6 +50,44 @@
   font-family: 'Barlow', sans-serif; outline: none; transition: border-color 0.2s;
 }
 .config-item input[type="number"]:focus { border-color: #00e5ff55; }
+.config-check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 39px;
+  align-self: flex-end;
+  color: #ccc;
+  font-size: 12px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.config-check input {
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid #333;
+  border-radius: 4px;
+  background: #0a0a0f;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s;
+}
+.config-check input:checked {
+  background: #00e5ff;
+  border-color: #00e5ff;
+}
+.config-check input:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 5px;
+  height: 9px;
+  border: solid #000;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
 
 /* ── TEXTAREA DE NOMES ───────────────────────────────────── */
 .textarea-wrap { position: relative; }
