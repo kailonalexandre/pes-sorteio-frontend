@@ -233,3 +233,234 @@ textarea::placeholder { color: #333; }
   background: #000; border-radius: 50%;
 }
 .league-actions { display: flex; gap: 6px; }
+
+/* ── CONFRONTOS EM FORMATO DE CHAVE ──────────────────────── */
+.match-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 18px 22px;
+  align-items: start;
+}
+
+.match-card {
+  position: relative;
+  background: #2a2c34;
+  border: 1px solid #42454f;
+  border-radius: 14px;
+  padding: 10px 12px 12px;
+  color: #d8dce8;
+  box-shadow: 0 10px 24px #00000022;
+  animation: fadeIn 0.4s ease forwards;
+  opacity: 0;
+}
+
+.match-card::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: -10px;
+  width: 10px;
+  border-top: 1px solid #42454f;
+}
+
+.match-card-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.match-meta {
+  min-width: 0;
+  color: #c5cad6;
+  font-size: 13px;
+  font-weight: 700;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.match-status {
+  min-width: 58px;
+  border-radius: 999px;
+  background: #4b4e5a;
+  color: #fff;
+  padding: 2px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.match-score-head {
+  display: grid;
+  grid-template-columns: 1fr 34px 34px 14px;
+  gap: 4px;
+  align-items: center;
+  margin-bottom: 4px;
+  color: #f2f4fb;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.match-score-head::before,
+.match-score-head::after {
+  content: '';
+}
+
+.match-score-head span {
+  border-radius: 999px;
+  background: #484b57;
+  padding: 2px 0;
+  text-align: center;
+}
+
+.match-teams {
+  display: grid;
+  gap: 5px;
+}
+
+.match-team-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 14px;
+  gap: 6px;
+  align-items: center;
+  min-height: 29px;
+}
+
+.match-team-name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+}
+
+.match-avatar {
+  width: 21px;
+  height: 21px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  background: #39404e;
+  border: 1px solid #5b6070;
+  color: #cbd2df;
+  font-size: 8px;
+  font-weight: 800;
+}
+
+.match-team-text {
+  min-width: 0;
+  color: #d2d6e0;
+  font-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.match-team-row.winner .match-team-text {
+  color: #fff;
+  font-weight: 800;
+}
+
+.match-score-cells {
+  display: grid;
+  grid-template-columns: 34px 34px;
+  gap: 4px;
+  align-items: center;
+}
+
+.match-score-input,
+.match-pen-input {
+  width: 34px;
+  height: 26px;
+  border: 1px solid #545966;
+  border-radius: 7px;
+  background: #20222b;
+  color: #fff;
+  font-family: 'Barlow', sans-serif;
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+  outline: none;
+}
+
+.match-pen-input {
+  border-color: #f59e0b66;
+  color: #f8c66d;
+}
+
+.match-score-input:disabled,
+.match-pen-input:disabled {
+  border-color: transparent;
+  background: transparent;
+  color: #eef2ff;
+  opacity: 1;
+}
+
+.match-pen-value {
+  width: 34px;
+  color: #bfc5d2;
+  font-size: 13px;
+  font-weight: 700;
+  text-align: center;
+}
+
+.match-winner-arrow {
+  color: #fff;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.match-winner-arrow.empty {
+  visibility: hidden;
+}
+
+.match-footer {
+  margin-top: 6px;
+  color: #b7bdca;
+  font-size: 12px;
+}
+
+.match-actions {
+  margin-top: 9px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.match-action-btn {
+  border: 1px solid #555a68;
+  border-radius: 7px;
+  background: transparent;
+  color: #bec5d4;
+  padding: 5px 10px;
+  font-family: 'Barlow', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.match-action-btn.primary {
+  border-color: #00e5ff66;
+  color: #00e5ff;
+}
+
+.match-action-btn:hover {
+  border-color: #00e5ff;
+  color: #00e5ff;
+}
+
+@media (max-width: 620px) {
+  .match-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .match-card::after {
+    display: none;
+  }
+}

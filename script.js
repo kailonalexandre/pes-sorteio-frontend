@@ -480,7 +480,7 @@ function renderMatchSection(matches, sectionId, title, accentColor = null) {
   section.appendChild(titleEl);
 
   // Grid de cards
-  const grid = el('div', { class: 'groups-grid' });
+  const grid = el('div', { class: 'match-grid' });
 
   matches.forEach(match => {
     const col = COLORS[match.groupIndex % COLORS.length];
@@ -506,196 +506,155 @@ function buildMatchCard(match, col) {
   const usesVictory = isVictoryScoring() && match.stage === 'group';
 
   const card = el('div', {
-    class: 'group-card',
-    style: `border-color:${col.border}; padding:12px; display:flex; flex-direction:column; gap:10px;`
+    class: `match-card ${isFinished ? 'is-finished' : ''}`,
+    style: `border-color:${col.border};`
   });
-
-  // Rótulo do confronto
-  const prefix = match.stage === 'group' ? 'Grupo' : 'Chave';
-  card.appendChild(el('div', {
-    style: `color:${col.badge}; font-size:12px; font-weight:bold; text-transform:uppercase; text-align:center;`
-  }, [`${prefix} ${match.group} — Jogo ${match.matchIndex}`]));
-
-  // ── Placar ──────────────────────────────────────────────────
-  const scoreboard = el('div', {
-    style: 'display:flex; align-items:center; justify-content:space-between; background:#15151f; padding:10px; border-radius:8px; border:1px solid #1e1e2e; width:100%; box-sizing:border-box;'
-  });
-
-  const nameStyle = (isWinner) =>
-    `flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-align:${isWinner ? 'right' : 'left'}; font-weight:${isWinner ? 'bold' : 'normal'}; color:${isWinner ? col.badge : '#ccc'}; font-size:14px;`;
 
   const p1Win = isFinished && match.winner === match.player1;
   const p2Win = isFinished && match.winner === match.player2;
-
-  const p1Col = el('div', { style: nameStyle(p1Win) }, [match.player1]);
-  const p2Col = el('div', { style: nameStyle(p2Win) }, [match.player2]);
-
-  // Bloco central: inputs de placar/vitória e pênaltis
-  const centerBlock = el('div', {
-    style: 'display:flex; flex-direction:column; align-items:center; justify-content:center; min-width:110px; flex-shrink:0; gap:4px; margin:0 10px;'
-  });
-
-  const inputStyle = 'width:40px; height:35px; text-align:center; background:#0f0f17; border:1px solid #333; color:#fff; border-radius:6px; font-size:16px; font-weight:bold;';
+  const needsPenalty = isDraw && match.stage !== 'group';
+  const hasPenalty = match.pen1 !== null && match.pen2 !== null;
+  const matchLabel = match.stage === 'group'
+    ? `Grupo ${match.group}`
+    : getRoundLabel(match.stage, match.round, Math.max(1, Math.ceil(matchData.filter(m => m.stage === match.stage && m.round === match.round).length)));
+  const statusText = isBye ? 'BYE' : (isFinished ? (hasPenalty ? 'FIM (P)' : 'FIM') : (needsPenalty ? 'PÊN.' : 'ABERTO'));
 
   const g1Input = el('input', {
     type: isBye ? 'text' : 'number', min: 0,
-    style: inputStyle,
+    class: 'match-score-input',
     value: match.goals1 !== null ? String(match.goals1) : '0'
   });
   const g2Input = el('input', {
     type: isBye ? 'text' : 'number', min: 0,
-    style: inputStyle,
+    class: 'match-score-input',
     value: match.goals2 !== null ? String(match.goals2) : '0'
   });
 
   if (isFinished || isBye) {
     g1Input.disabled = true;
     g2Input.disabled = true;
-    g1Input.style.borderColor = col.badge;
-    g2Input.style.borderColor = col.badge;
   }
 
-  const centerRow = el('div', { style: 'display:flex; align-items:center; gap:8px;' });
-  centerRow.append(
-    g1Input,
-    el('span', { style: 'color:#666; font-size:12px; font-weight:bold;' }, ['×']),
-    g2Input
-  );
-  centerBlock.appendChild(centerRow);
-  if (usesVictory && !isFinished && !isBye) {
-    centerBlock.appendChild(el('div', {
-      style: 'color:#888; font-size:10px; text-align:center; line-height:1.2; max-width:110px;'
-    }, ['Use 1 x 0 para o vencedor']));
+  let pen1Input = null;
+  let pen2Input = null;
+  if (needsPenalty) {
+    pen1Input = el('input', { type: 'number', min: 0, class: 'match-pen-input', value: '0' });
+    pen2Input = el('input', { type: 'number', min: 0, class: 'match-pen-input', value: '0' });
   }
 
-  // Pênaltis (só aparece em mata-mata com empate aguardando resolução)
-  let pen1Input, pen2Input;
-  if (isDraw && match.stage !== 'group') {
-    const penRow = el('div', { style: 'display:flex; align-items:center; gap:4px; margin-top:4px;' });
-    penRow.appendChild(el('span', { style: 'color:#f59e0b; font-size:10px; font-weight:bold;' }, ['PÊN:']));
-    pen1Input = el('input', { type: 'number', min: 0, style: 'width:28px; height:22px; text-align:center; background:#1e1e2e; border:1px solid #f59e0b; color:#fff; border-radius:4px; font-size:12px;', value: '0' });
-    pen2Input = el('input', { type: 'number', min: 0, style: 'width:28px; height:22px; text-align:center; background:#1e1e2e; border:1px solid #f59e0b; color:#fff; border-radius:4px; font-size:12px;', value: '0' });
-    penRow.append(pen1Input, el('span', { style: 'color:#888; font-size:10px;' }, ['×']), pen2Input);
-    centerBlock.appendChild(penRow);
+  const header = el('div', { class: 'match-card-header' }, [
+    el('div', { class: 'match-meta' }, [`${matchLabel} — Jogo ${match.matchIndex}`]),
+    el('div', { class: 'match-status' }, [statusText]),
+  ]);
+
+  const scoreHead = el('div', { class: 'match-score-head' }, [
+    el('span', {}, ['G']),
+    el('span', {}, ['P']),
+  ]);
+
+  function avatar(name, winner) {
+    const initials = String(name || '?')
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(part => part[0])
+      .join('')
+      .toUpperCase();
+    return el('span', {
+      class: `match-avatar ${winner ? 'winner' : ''}`,
+      style: winner ? `background:${col.badge}; color:${col.badgeText};` : ''
+    }, [initials || '?']);
   }
 
-  // Exibe pênaltis históricos
-  if (isFinished && match.pen1 !== null) {
-    centerBlock.appendChild(el('div', {
-      style: 'color:#f59e0b; font-size:11px; font-weight:bold; text-align:center; margin-top:2px;'
-    }, [`Pên: ${match.pen1} × ${match.pen2}`]));
+  function scoreNode(playerNumber, input, penValue) {
+    const pen = needsPenalty
+      ? (playerNumber === 1 ? pen1Input : pen2Input)
+      : el('span', { class: 'match-pen-value' }, [penValue !== null ? `(${penValue})` : '']);
+    return el('div', { class: 'match-score-cells' }, [input, pen]);
   }
 
-  scoreboard.append(p1Col, centerBlock, p2Col);
-  card.appendChild(scoreboard);
+  function teamRow(name, winner, input, penValue, playerNumber) {
+    return el('div', { class: `match-team-row ${winner ? 'winner' : ''}` }, [
+      el('div', { class: 'match-team-name' }, [
+        avatar(name, winner),
+        el('span', { class: 'match-team-text' }, [name]),
+      ]),
+      scoreNode(playerNumber, input, penValue),
+      winner ? el('span', { class: 'match-winner-arrow' }, ['◂']) : el('span', { class: 'match-winner-arrow empty' }, ['']),
+    ]);
+  }
 
-  // ── Botão confirmar / status ──────────────────────────────
-  if (!isFinished) {
-    const hasPen = isDraw && match.stage !== 'group';
-    const btnLabel = usesVictory ? 'Confirmar Vencedor' : (hasPen ? 'Confirmar Pênaltis' : 'Confirmar Placar');
+  function emitScore(pen1 = null, pen2 = null) {
+    const v1 = parseInt(g1Input.value);
+    const v2 = parseInt(g2Input.value);
 
-    const btn = el('button', {
-      class: 'btn-reset',
-      style: `width:100%; padding:8px; border-color:${col.border}; color:${col.badge}; margin-top:4px;`,
-      onclick: () => {
-        const v1 = parseInt(g1Input.value);
-        const v2 = parseInt(g2Input.value);
-
-        if (isNaN(v1) || isNaN(v2)) {
-          alert('Preencha os dois campos de gols!');
-          return;
-        }
-
-        if (usesVictory && v1 === v2) {
-          alert('No Mortal Kombat, informe o vencedor geral. Use 1 x 0 ou 0 x 1.');
-          return;
-        }
-
-        let p1 = null, p2 = null;
-        if (hasPen) {
-          p1 = parseInt(pen1Input.value);
-          p2 = parseInt(pen2Input.value);
-          if (isNaN(p1) || isNaN(p2)) {
-            alert('Preencha os pênaltis!');
-            return;
-          }
-          if (p1 === p2) {
-            alert('Pênaltis não podem terminar empatados!');
-            return;
-          }
-        }
-
-        socket.emit('updateMatchScore', {
-          tournamentId: TOURNAMENT_ID,
-          matchId: match.id,
-          goals1: v1,
-          goals2: v2,
-          pen1: p1,
-          pen2: p2,
-        });
-      }
-    }, [btnLabel]);
-
-    card.appendChild(btn);
-
-  } else {
-    // Status final
-    let statusText;
-    if (isBye) statusText = `${match.player1} avança (BYE)`;
-    else if (match.stage === 'group' && match.draw) statusText = 'Empate';
-    else statusText = `Vencedor: ${match.winner}`;
-
-    const statusRow = el('div', { style: 'display: flex; justify-content: space-between; align-items: center; margin-top: 4px;' });
-
-    // Status label
-    statusRow.appendChild(el('div', {
-      style: `font-size:12px; color:${col.badge}; font-weight:bold; flex: 1; text-align: center;`
-    }, [statusText]));
-
-    // Botão de editar (se não for bye)
-    if (!isBye) {
-      const editBtn = el('button', {
-        class: 'btn-reset',
-        style: `font-size: 10px; padding: 3px 8px; border-color:#333; color:#888; border-radius: 4px;`,
-        onclick: () => {
-          // Destroi status atual e abre modo de edição
-          statusRow.style.display = 'none';
-          g1Input.disabled = false;
-          g2Input.disabled = false;
-          g1Input.style.borderColor = '#555';
-          g2Input.style.borderColor = '#555';
-
-
-          const saveBtn = el('button', {
-            class: 'btn-reset',
-            style: `width:100%; padding:8px; border-color:${col.badge}; color:${col.badge}; margin-top:8px;`,
-            onclick: () => {
-              const v1 = parseInt(g1Input.value);
-              const v2 = parseInt(g2Input.value);
-              if (isNaN(v1) || isNaN(v2)) return;
-              if (usesVictory && v1 === v2) {
-                alert('No Mortal Kombat, informe o vencedor geral. Use 1 x 0 ou 0 x 1.');
-                return;
-              }
-
-              socket.emit('updateMatchScore', {
-                tournamentId: TOURNAMENT_ID,
-                matchId: match.id,
-                goals1: v1,
-                goals2: v2,
-                pen1: match.pen1,
-                pen2: match.pen2,
-              });
-            }
-          }, ['Salvar Correção']);
-          card.appendChild(saveBtn);
-        }
-      }, ['Editar']);
-      statusRow.appendChild(editBtn);
+    if (isNaN(v1) || isNaN(v2)) {
+      alert('Preencha os dois campos de gols!');
+      return;
     }
 
-    card.appendChild(statusRow);
+    if (usesVictory && v1 === v2) {
+      alert('No Mortal Kombat, informe o vencedor geral. Use 1 x 0 ou 0 x 1.');
+      return;
+    }
+
+    if (needsPenalty) {
+      pen1 = parseInt(pen1Input.value);
+      pen2 = parseInt(pen2Input.value);
+      if (isNaN(pen1) || isNaN(pen2)) {
+        alert('Preencha os pênaltis!');
+        return;
+      }
+      if (pen1 === pen2) {
+        alert('Pênaltis não podem terminar empatados!');
+        return;
+      }
+    }
+
+    socket.emit('updateMatchScore', {
+      tournamentId: TOURNAMENT_ID,
+      matchId: match.id,
+      goals1: v1,
+      goals2: v2,
+      pen1,
+      pen2,
+    });
   }
+
+  const teams = el('div', { class: 'match-teams' }, [
+    teamRow(match.player1, p1Win, g1Input, match.pen1, 1),
+    teamRow(match.player2, p2Win, g2Input, match.pen2, 2),
+  ]);
+
+  const total = isBye
+    ? `${match.player1} avança sem adversário`
+    : `Total: ${g1Input.value} - ${g2Input.value}${hasPenalty ? ` (${match.pen1} - ${match.pen2} pên.)` : ''}`;
+  const footer = el('div', { class: 'match-footer' }, [
+    el('span', {}, [total]),
+  ]);
+
+  const actions = el('div', { class: 'match-actions' });
+  if (!isFinished && !isBye) {
+    actions.appendChild(el('button', { class: 'match-action-btn primary', onclick: () => emitScore() }, [
+      needsPenalty ? 'Confirmar Pênaltis' : (usesVictory ? 'Confirmar Vencedor' : 'Confirmar Placar')
+    ]));
+  } else if (isFinished && !isBye) {
+    actions.appendChild(el('button', {
+      class: 'match-action-btn',
+      onclick: () => {
+        g1Input.disabled = false;
+        g2Input.disabled = false;
+        actions.innerHTML = '';
+        actions.appendChild(el('button', {
+          class: 'match-action-btn primary',
+          onclick: () => emitScore(match.pen1, match.pen2)
+        }, ['Salvar Correção']));
+      }
+    }, ['Editar']));
+  }
+
+  card.append(header, scoreHead, teams, footer);
+  if (actions.childNodes.length) card.appendChild(actions);
 
   return card;
 }
