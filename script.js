@@ -548,8 +548,8 @@ function buildMatchCard(match, col) {
   ]);
 
   const scoreHead = el('div', { class: 'match-score-head' }, [
-    el('span', {}, ['G']),
-    el('span', {}, ['P']),
+    el('span', {}, ['D1']),
+    el('span', {}, ['D2']),
   ]);
 
   function avatar(name, winner) {
@@ -628,7 +628,7 @@ function buildMatchCard(match, col) {
 
   const total = isBye
     ? `${match.player1} avança sem adversário`
-    : `Total: ${g1Input.value} - ${g2Input.value}${hasPenalty ? ` (${match.pen1} - ${match.pen2} pên.)` : ''}`;
+    : `Total com jogo de ida: ${g1Input.value} - ${g2Input.value}${hasPenalty ? ` (${match.pen1} - ${match.pen2} pên.)` : ''}`;
   const footer = el('div', { class: 'match-footer' }, [
     el('span', {}, [total]),
   ]);
