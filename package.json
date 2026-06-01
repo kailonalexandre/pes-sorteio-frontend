@@ -1,0 +1,23 @@
+{
+  "name": "placar_pes",
+  "version": "1.0.0",
+  "description": "",
+  "main": "script.js",
+  "scripts": {
+    "build": "echo \"No build needed for plain JS web app\"",
+    "start": "node script.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kailonalexandre/pes-sorteio-frontend.git"
+  },
+  "bugs": {
+    "url": "https://github.com/kailonalexandre/pes-sorteio-frontend/issues"
+  },
+  "homepage": "https://github.com/kailonalexandre/pes-sorteio-frontend#readme"
+}

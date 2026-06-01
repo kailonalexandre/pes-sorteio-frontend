@@ -8,9 +8,10 @@
 console.log('✅✅✅ SCRIPT.JS CARREGADO COM SUCESSO - v2.1 ✅✅✅');
 // Ambiente: local vs produção
 const isLocalFrontend = ['localhost', '127.0.0.1', ''].includes(window.location.hostname);
-const BACKEND_URL = isLocalFrontend
+const configuredBackendUrl = window.PES_CONFIG?.backendUrl;
+const BACKEND_URL = configuredBackendUrl || (isLocalFrontend
   ? 'http://localhost:3000'
-  : 'https://pes-backend-production.up.railway.app';
+  : 'https://pes-backend-production.up.railway.app');
 const _params = new URLSearchParams(window.location.search);
 const TOURNAMENT_ID = _params.get('id') || null;
 const IS_NEW_ROOM = _params.get('new') === '1';
@@ -291,7 +292,7 @@ function onStateUpdated(state) {
     const matches = matchData.filter(m => m.stage === 'final' && m.round === round);
     const sectionId = `finalMatchesSection_r${round}`;
     const title = round === 1
-      ? 'Chave Principal (Mata-Mata)'
+      ? getRoundLabel('final', round, matches.length)
       : getRoundLabel('final', round, matches.length);
     renderMatchSection(matches, sectionId, title, '#00e5ff');
   });
